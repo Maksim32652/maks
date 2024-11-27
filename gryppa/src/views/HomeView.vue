@@ -1,75 +1,70 @@
 <script setup>
+import { useCategoryStore } from '@/stores/category';
+import { useProductStore } from '@/stores/product';
+import { ref } from 'vue';
 
+
+const productStore = useProductStore ();
+const categoryStore = useCategoryStore();
+const category = ref(null);
+const searchText = ref('');
+const products = ref([]);
+products.value = productStore.products; 
+
+
+const filterCategory = () => {
+products.value = productStore.productsFilteredByCategoryName(category.value, null);
+searchText.value = '';
+}
+const SearchName = () => {
+products.value = productStore.productsFilteredByCategoryName(null, searchText.value );
+category.value = '';
+}
+
+const resetAll = () => {
+  searchText.value = '';
+  category.value = null;
+  products.value = productStore.products; 
+}
 </script>
 
 <template>
-  <div class="contener">
-    <div class="row md-4">
+  <div class="container">
+    <div class="row mt-4">
       <div class="col-md-5">
-       <select class="form-select" aria-label="Default select example">
-  <option selected>Select category</option>
-  <option value="1">VideoCard</option>
-  <option value="2">CPU</option>
-  <option value="3">MotherBoard</option>
-  <option value="4">RAM</option>
-</select>
-</div>
-
+              <select @change="filterCategory" class="form-select" v-model="category" aria-label="Default select example">
+        <option :value="null" selected>Select category</option>
+        <option 
+        v-for="category in categoryStore.categories"
+        :value="category"
+        :key="category"
+        >{{ category }}</option>
+      </select>
+      </div>
       <div class="col-md-5">
-        <input type="email" class="form-control"  placeholder="Search by name...">
+        <input type="text" @input="SearchName" v-model="searchText" class="form-control" placeholder="Search by name...">
       </div>
       <div class="col-md-2">
-        <button type="button" class="btn btn-info">Reset</button>
+        <button type="button" class="btn btn-outline-danger" @click="resetAll">Reset</button>
       </div>
     </div>
-    <div class="card-group">
-      <div class="col">
-  <div class="card">
-    <img src="https://static.onlinetrade.ru/img/items/b/materinskaya_plata_asrock_z270_gaming_k4_lga1151_atx__2.jpg" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Материнская плата ASRock Z270 GAMING K4 (LGA1151, ATX)</h5>
-      <p class="card-text">$400</p>
-      <p class="card-text">MotherBoard</p>
+    <div class="row row-cols-1 row-cols-md-3 g-4 row mt-4">
+  <div class="col" v-for="product in products" :key="product.id">
+    <div class="card">
+      <img :src="product.img" class="card-img-top">
+      <div class="card-body" style="height: 150px;">
+        <h5 class="card-title">{{ product.name }}</h5>
+        <p class="card-text">{{product.category}}</p>
+        <p class="card-text">{{ product.price }}</p>
+      </div>
+      <div class="card-footer text-end">
+        <button type="button" class="btn btn-outline-danger m-2">Detail</button>
+        <button type="button" class="btn btn-outline-danger">Cart</button>
+      </div>
     </div>
- 
-    <div class="card-footer text-end">
-    <button type="button" class="btn btn-success m-2">Datele</button>
-    <button type="button" class="btn btn-secondary">card</button>
-  </div>
- </div>
-  </div>
-  <div class="col">
-  <div class="card">
-    <img src="https://avatars.mds.yandex.net/i?id=eafc6329a5f82b7e78730bf9f3cdc824_l-5234613-images-thumbs&n=13" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Процессор AMD Ryzen 5 7500F, 3.7ГГц,</h5>
-      <p class="card-text">$1500</p>
-      <p class="card-text"><small class="text-body-secondary">CPU</small></p>
-    </div>
-  
-    <div class="card-footer text-end">
-    <button type="button" class="btn btn-success m-2">Datele</button>
-    <button type="button" class="btn btn-secondary">card</button>
-  </div>
-</div>
-  <div class="col">
-  <div class="card">
-    <img src="https://avatars.mds.yandex.net/i?id=a860486763713160891e4322feae3b5d_l-5869639-images-thumbs&n=13" class="card-img-top" alt="...">
-    <div class="card-body">
-      <h5 class="card-title">Samsung Now Mass Producing Industry’s Most Advanced DDR4, Using 20 Nanometer-class Process Technology</h5>
-      <p class="card-text">$1000</p>
-      <p class="card-text"><small class="text-body-secondary">RAM</small></p>
-    </div>
-  
-    <div class="card-footer text-end">
-    <button type="button" class="btn btn-success m-2">Datele</button>
-    <button type="button" class="btn btn-secondary">card</button>
-  </div>
-</div>
-</div>
-    </div>
-  </div>
   </div>
 
   
+    </div>
+  </div>
 </template>
